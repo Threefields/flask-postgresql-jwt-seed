@@ -7,10 +7,9 @@ from flask_security.utils import encrypt_password, verify_password
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
 
-from . import db, io, ma
+from . import db, ma
 from models import *
 from config import *
-from database import *
 
 logger  = logging.getLogger(__name__)
 
@@ -28,6 +27,7 @@ def create_app(environment):
 
     # Routes
     app.add_url_rule('/', 'home', home)
+    app.add_url_rule('/users', 'users', users)
 
     # Database Initialization
     db.init_app(app)
@@ -38,9 +38,6 @@ def create_app(environment):
 
     # Flask-Marshmallow
     ma.init_app(app)
-
-    # Flask-IO
-    io.init_app(app)
 
     return app
 
@@ -58,4 +55,10 @@ def load_user(payload):
     return user
 
 def home():
-    return  dict(name='Flask REST API')
+    return  "TEST"
+
+def users():
+    users = User.query.all()
+    result = users_schema.dump(users)
+
+    return jsonify({'users': result.data})
